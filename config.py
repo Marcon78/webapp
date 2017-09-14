@@ -7,6 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     # 是否需要追踪对象的修改并且发送信号。这需要额外的内存，如果不必要的可以禁用它。
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = "j5@CRnKRfSG9XCcp"
 
 
 class ProdConfig(Config):
