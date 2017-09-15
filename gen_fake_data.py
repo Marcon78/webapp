@@ -1,9 +1,9 @@
-import datetime
-import forgery_py
 from random import seed, randint, sample
-from main import app, db, \
-    User, Post, Tag, Comment
 
+import forgery_py
+
+from webapp.controllers.main import db, \
+    User, Post, Tag
 
 # insert users.
 users = [

@@ -14,7 +14,7 @@
             <div class="col-lg-6">
                 <p>
                     Written By
-                    <a href="{{ url_for('user', username=post.user.username) }}">
+                    <a href="{{ url_for('.user', username=post.user.username) }}">
                         {{ post.user.username }}
                     </a>
                     on {{ post.publish_date }}
@@ -24,7 +24,7 @@
                 <p class="text-right">
                     Tags:
                     {% for tag in tags %}
-                    <a href="{{ url_for('tag', tag_name=tag.title) }}">{{ tag.title }}</a>
+                    <a href="{{ url_for('.tag', tag_name=tag.title) }}">{{ tag.title }}</a>
                     {% endfor %}
                 </p>
             </div>
