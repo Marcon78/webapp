@@ -1,6 +1,8 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
+from webapp.extensions import bcrypt
+
 db = SQLAlchemy()
 
 tags = db.Table("post_tags",
@@ -14,7 +16,8 @@ class User(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(32))
+    password = db.Column(db.String(128))
+    register_date = db.Column(db.DateTime, default=datetime.utcnow())
     # relationship 的第一个参数表明这个关系的另一端是哪个模型；
     # backref 参数向外键（从属）模型中添加一个以此字符串命名的属性，从而定义反向关系；
     # lazy 参数指定如何加载相关记录。可选值有：
@@ -28,10 +31,17 @@ class User(db.Model):
 
     def __init__(self, username, password=None):
         self.username = username
-        self.password = password
+        if password:
+            self.set_password(password)
 
     def __repr__(self):
         return "<User '{}'>".format(self.username)
+
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password)
+
+    def check_password(self, password):
+        bcrypt.check_password_hash(self.password, password)
 
 
 class Post(db.Model):

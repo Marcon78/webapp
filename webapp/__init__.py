@@ -1,13 +1,10 @@
 from flask import Flask, url_for, redirect
-from flask_bootstrap import Bootstrap
 
 from webapp.config import DevConfig
 from webapp.models import db
+from webapp.extensions import bootstrap, bcrypt
 from webapp.controllers.blog import blog_blueprint
 from webapp.controllers.main import main_blueprint
-
-
-bootstrap = Bootstrap()
 
 
 def create_app(object_name):
@@ -24,6 +21,7 @@ def create_app(object_name):
 
     db.init_app(app)
     bootstrap.init_app(app)
+    bcrypt.init_app(app)
 
     app.register_blueprint(blog_blueprint)
     app.register_blueprint(main_blueprint)
