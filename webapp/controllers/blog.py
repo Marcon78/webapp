@@ -1,8 +1,9 @@
+from datetime import datetime
 from os import path
 from flask import Blueprint, render_template, redirect, url_for
 from sqlalchemy import func
 from webapp.models import db, User, Post, Comment, Tag, tags
-from webapp.forms import CommentForm
+from webapp.forms import CommentForm, PostForm
 # from ..models import db, Post, Tag, tags
 
 
@@ -50,6 +51,34 @@ def post(post_id):
                            post=post, tags=tags, comments=comments,
                            recent=recent, top_tags=top_tags,
                            form=form)
+
+
+@blog_blueprint.route("/new", methods=["GET", "POST"])
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        new_post = Post(form.title.data)
+        new_post.text = form.text.data
+        db.session.add(new_post)
+        db.session.commit()
+        return redirect(url_for(".post", post_id=new_post.id))
+    return render_template("new.html", form=form)
+
+
+@blog_blueprint.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit_post(id):
+    post = Post.query.get_or_404(id)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.text = form.text.data
+        post.publish_date = datetime.utcnow()
+        db.session.add(post)
+        db.session.commit()
+        return redirect(".post", post_id=post.id)
+    form.title.data = post.title
+    form.text.data = post.text
+    return render_template("edit.html", post=post, form=form)
 
 
 @blog_blueprint.route("/tag/<string:tag_name>")

@@ -45,6 +45,7 @@ class RegisterForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(1, 255)])
     password = PasswordField("Password", validators=[DataRequired(), Length(1, 8)])
     confirm = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password")])
+    submit = SubmitField("Register")
 
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():

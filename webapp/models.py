@@ -17,7 +17,6 @@ class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(128))
-    register_date = db.Column(db.DateTime, default=datetime.utcnow())
     # relationship 的第一个参数表明这个关系的另一端是哪个模型；
     # backref 参数向外键（从属）模型中添加一个以此字符串命名的属性，从而定义反向关系；
     # lazy 参数指定如何加载相关记录。可选值有：

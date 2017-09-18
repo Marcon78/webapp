@@ -23,5 +23,8 @@
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    {# 注意，Javascript 部分要在文档的底部。 #}
+    {% block js %}
+    {% endblock %}
 </body>
 </html>
