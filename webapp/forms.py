@@ -19,6 +19,7 @@ class CommentForm(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired(), Length(1, 255)])
     password = PasswordField("Password", validators=[DataRequired()])
+    remember = BooleanField("Remember Me")
     submit = SubmitField("Login")
 
     # validate 方法的实质就是依次调用每个成员属性的 validate_<fieldname> 方法。

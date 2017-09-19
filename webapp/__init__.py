@@ -1,8 +1,10 @@
 from flask import Flask, url_for, redirect
+from flask_login import current_user
+from flask_principal import identity_loaded, UserNeed, RoleNeed
 
 from webapp.config import DevConfig
 from webapp.models import db
-from webapp.extensions import bootstrap, bcrypt
+from webapp.extensions import bootstrap, bcrypt, lm, principals
 from webapp.controllers.blog import blog_blueprint
 from webapp.controllers.main import main_blueprint
 
@@ -22,6 +24,22 @@ def create_app(object_name):
     db.init_app(app)
     bootstrap.init_app(app)
     bcrypt.init_app(app)
+    lm.init_app(app)
+    principals.init_app(app)
+
+    @identity_loaded.connect_via(app)
+    def on_identity_loaded(sender, identity):
+        # set the user object of identity
+        identity.user = current_user
+
+        # add the UserNeed to the identity
+        if hasattr(current_user, "id"):
+            identity.provides.add(UserNeed(current_user.id))
+
+        # add each role to the identity
+        if hasattr(current_user, "roles"):
+            for role in current_user.roles:
+                identity.provides.add(RoleNeed(role.name))
 
     app.register_blueprint(blog_blueprint)
     app.register_blueprint(main_blueprint)

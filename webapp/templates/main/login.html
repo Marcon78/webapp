@@ -9,13 +9,13 @@
     <div class="col-md-4"></div>
     <div class="col-md-4">
         <h1 class="text-center">Login</h1>
-        <!--<form method="POST" action="{{ url_for("main.login") }}">-->
+        <!--<form method="POST" action="{{ url_for(".login") }}">-->
             <!--{{ form.hidden_tag() }}-->
             <!--<div class="form-group">-->
                 <!--{{ form.username.label }}-->
                 <!--{% if form.username.errors %}-->
                     <!--{% for e in form.username.errors %}-->
-                        <!--<p class="help-block">{{ e }}</p>-->
+                    <!--<p class="help-block">{{ e }}</p>-->
                     <!--{% endfor %}-->
                 <!--{% endif %}-->
                 <!--{{ form.username(class_="form-control") }}-->
@@ -24,10 +24,19 @@
                 <!--{{ form.password.label }}-->
                 <!--{% if form.password.errors %}-->
                     <!--{% for e in form.password.errors %}-->
-                        <!--<p class="help-block">{{ e }}</p>-->
+                    <!--<p class="help-block">{{ e }}</p>-->
                     <!--{% endfor %}-->
                 <!--{% endif %}-->
                 <!--{{ form.password(class_="form-control") }}-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+                <!--{{ form.remember.label }}-->
+                <!--{% if form.remember.errors %}-->
+                    <!--{% for e in form.remember.errors %}-->
+                    <!--<p class="help-block">{{ e }}</p>-->
+                    <!--{% endfor %}-->
+                <!--{% endif %}-->
+                <!--{{ form.remember(class_="form-control") }}-->
             <!--</div>-->
             <!--<input class="btn btn-primary" type="submit" value="Login">-->
         <!--</form>-->

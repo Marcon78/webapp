@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import AnonymousUserMixin
 
 from webapp.extensions import bcrypt
 
@@ -9,6 +10,11 @@ tags = db.Table("post_tags",
                 db.Column("post_id", db.Integer, db.ForeignKey("posts.id")),
                 db.Column("tag_id", db.Integer, db.ForeignKey("tags.id"))
                 )
+
+roles = db.Table("role_users",
+                 db.Column("role_id", db.Integer, db.ForeignKey("roles.id")),
+                 db.Column("user_id", db.Integer, db.ForeignKey("users.id"))
+                 )
 
 
 class User(db.Model):
@@ -27,11 +33,20 @@ class User(db.Model):
     #     noload（永不加载）
     #     dynamic（不加载记录，但提供加载记录的查询）
     posts = db.relationship("Post", backref="user", lazy="dynamic")
+    roles = db.relationship("Role",
+                            secondary=roles,
+                            backref=db.backref("users", lazy="dynamic"),
+                            lazy="dynamic")
 
     def __init__(self, username, password=None):
         self.username = username
         if password:
             self.set_password(password)
+        # one() 方法，完整的提取所有的记录行，
+        # 并且如果没有明确的一条记录行（没有找到这条记录）或者结果中存在多条记录行，
+        # 将会引发错误异常 NoResultFound 或者 MultipleResultsFound。
+        default_role = Role.query.filter_by(name="DEFAULT").one()
+        self.roles.append(default_role)
 
     def __repr__(self):
         return "<User '{}'>".format(self.username)
@@ -40,7 +55,33 @@ class User(db.Model):
         self.password = bcrypt.generate_password_hash(password)
 
     def check_password(self, password):
-        bcrypt.check_password_hash(self.password, password)
+        return bcrypt.check_password_hash(self.password, password)
+
+    def is_authenticated(self):
+        return not isinstance(self, AnonymousUserMixin)
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return isinstance(self, AnonymousUserMixin)
+
+    def get_id(self):
+        return str(self.id)
+
+
+class Role(db.Model):
+    __tablename__ = "roles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    description = db.Column(db.String(255))
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return "<Role '{}'>".format(self.name)
 
 
 class Post(db.Model):

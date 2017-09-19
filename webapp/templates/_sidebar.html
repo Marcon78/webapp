@@ -14,8 +14,8 @@
         <ul>
             {% for tag in top_tags %}
             <li>
-                <a href="{{ url_for('.tag', tag_name=tag.title) }}">{{ tag.title }}</a>
-                <!--<a href="{{ url_for('blog.tag', tag_name=tag[0].title) }}">{{ tag[0].title }}</a>-->
+                <!--tag 对象是由 db.session.query() 获取的 sqlalchemy.util._collections.result 对象，元素 0 中包含真正的对象。-->
+                <a href="{{ url_for('blog.tag', tag_name=tag[0].title) }}">{{ tag[0].title }}</a>
             </li>
             {% endfor %}
         </ul>

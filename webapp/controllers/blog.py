@@ -1,10 +1,13 @@
 from datetime import datetime
 from os import path
-from flask import Blueprint, render_template, redirect, url_for
 from sqlalchemy import func
+from flask import Blueprint, render_template, redirect, url_for, abort
+from flask_login import login_required
+from flask_principal import Permission, UserNeed
+
 from webapp.models import db, User, Post, Comment, Tag, tags
 from webapp.forms import CommentForm, PostForm
-# from ..models import db, Post, Tag, tags
+from webapp.extensions import poster_permission, admin_permission
 
 
 blog_blueprint = Blueprint("blog", __name__,
@@ -54,6 +57,8 @@ def post(post_id):
 
 
 @blog_blueprint.route("/new", methods=["GET", "POST"])
+@login_required
+@poster_permission.require(http_exception=403)  # Forbidden	禁止访问。
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
@@ -66,19 +71,26 @@ def new_post():
 
 
 @blog_blueprint.route("/edit/<int:id>", methods=["GET", "POST"])
+@login_required
+@poster_permission.require(http_exception=403)
 def edit_post(id):
     post = Post.query.get_or_404(id)
-    form = PostForm()
-    if form.validate_on_submit():
-        post.title = form.title.data
-        post.text = form.text.data
-        post.publish_date = datetime.utcnow()
-        db.session.add(post)
-        db.session.commit()
-        return redirect(".post", post_id=post.id)
-    form.title.data = post.title
-    form.text.data = post.text
-    return render_template("edit.html", post=post, form=form)
+    # 用户权限
+    permission = Permission(UserNeed(post.user.id))
+    # We want admins to be able to edit any post
+    if permission.can() or admin_permission.can():
+        form = PostForm()
+        if form.validate_on_submit():
+            post.title = form.title.data
+            post.text = form.text.data
+            post.publish_date = datetime.utcnow()
+            db.session.add(post)
+            db.session.commit()
+            return redirect(url_for(".post", post_id=post.id))
+        form.title.data = post.title
+        form.text.data = post.text
+        return render_template("edit.html", post=post, form=form)
+    abort(403)
 
 
 @blog_blueprint.route("/tag/<string:tag_name>")

@@ -1,5 +1,7 @@
 from os import path
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, current_app
+from flask_login import login_user, logout_user
+from flask_principal import identity_changed, Identity, AnonymousIdentity
 
 from webapp.forms import LoginForm, RegisterForm
 from webapp.models import db, User
@@ -18,15 +20,32 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash("You have been logged in.", category="success")
-        return redirect(url_for(".index"))
-    return render_template("login.html",
-                           form=form)
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember.data)
+
+            # 当用户登录时，会触发 on_identity_loaded 方法，载入 Need 对象。
+            identity_changed.send(
+                # current_app 只是一个包装对象，要获取真正的对象，需要调用 _get_current_object() 方法。
+                current_app._get_current_object(),
+                identity=Identity(user.id)
+            )
+
+            flash("You have been logged in.", category="success")
+            return redirect(url_for(".index"))
+    return render_template("login.html", form=form)
 
 
 # @main_blueprint.route("/logout", methods=["GET", "POST"])
 @main_blueprint.route("/logout")
 def logout():
+    logout_user()
+
+    identity_changed.send(
+        current_app._get_current_object(),
+        identity=AnonymousIdentity()
+    )
+
     flash("You have been logged out.", category="success")
     return redirect(url_for(".index"))
 
