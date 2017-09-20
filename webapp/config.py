@@ -22,3 +22,8 @@ class DevConfig(Config):
     #     "sqlite:///" + os.path.join(basedir, "data-dev.sqlite")
     SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
         "sqlite:///" + os.path.join(os.path.pardir, "data-dev.sqlite")
+    MONGODB_SETTINGS = {
+        "db": "local",
+        "host": "192.168.7.150",
+        "port": 27017
+    }

@@ -1,10 +1,12 @@
 from datetime import datetime
+from flask_mongoengine import MongoEngine
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import AnonymousUserMixin
 
 from webapp.extensions import bcrypt
 
 db = SQLAlchemy()
+mongo = MongoEngine()
 
 tags = db.Table("post_tags",
                 db.Column("post_id", db.Integer, db.ForeignKey("posts.id")),
@@ -131,3 +133,104 @@ class Tag(db.Model):
 
     def __repr__(self):
         return "<Tag '{}'>".format(self.title)
+
+
+#
+# Mongo Example Code
+#
+
+available_roles = ("ADMINISTRATOR", "AUTHOR", "DEFAULT")
+
+# 从 mongo.Document 继承，意味着只有在类中定义的键才会被保存到数据集合中。
+# 如果是从 mongo.DynamicDocument 继承，则任何额外的字段都会被认为是 DynamicField，并且被保存到文档中。
+class Userm(mongo.Document):
+    username = mongo.StringField(primary_key=None,
+                                 db_field=None,
+                                 required=True,
+                                 default=None,
+                                 unique=False,
+                                 unique_with=None,
+                                 choices=None)
+    password = mongo.StringField(required=True)
+    roles = mongo.ListField(mongo.StringField(choices=available_roles))
+
+    def __repr__(self):
+        return "<User '{}'>".format(self.username)
+
+
+# mongo.EmbeddedDocument 是一个内嵌的文档，可以将其传给 EmbeddedDocumentField 类型的字段。
+class Commentm(mongo.EmbeddedDocument):
+    name = mongo.StringField(required=True)
+    text = mongo.StringField(required=True)
+    date = mongo.DateTimeField(default=datetime.utcnow())
+
+    def __repr__(self):
+        return "<Comment '{}'>".format(self.text[:15])
+
+
+class Postm(mongo.Document):
+    title = mongo.StringField(required=True)
+    publish_date = mongo.DateTimeField(default=datetime.utcnow())
+    # ReferenceField 只是简单地保存了一个文档的唯一 ID，当被查询时，MongoEngine 会根据此 ID 返回被引用的文档。
+    user = mongo.ReferenceField(Userm)
+    comments = mongo.ListField(mongo.EmbeddedDocumentField(Commentm))
+    tags = mongo.ListField(mongo.StringField())
+
+    def __repr__(self):
+        return "<Post '{}'>".format(self.title)
+
+    # 文档的很多属性都可以通过类属性 meta 手动设置。
+    meta = {
+        # # 如果已经在现成的数据集上工作，希望把新写的类绑定到此集合上，设置 collection 键。
+        # "collectino": "user_posts",
+        # # 文档最大数量（个）。
+        # "max_documents": 10000,
+        # # 单个文档最大长度（字节 bytes）。
+        # "max_size": 2000000,
+        # # 集合默认的排序方式："+"表示升序，"-"表示降序。可以被查询时的 order_by 覆盖。
+        # "ordering": ["-published_date"],
+        # # 索引定义。字段前缀"+"表示升序，"-"表示降序。
+        # # http://docs.mongoengine.org/guide/defining-documents.html?highlight=meta#indexes
+        # "indexes": [
+        #     "title",
+        #     "$title",  # text index
+        #     "#title",  # hashed index
+        #     ("title", "-publish_date")
+        # ],
+        # 允许继承，默认是 False。
+        # 由于继承后的子类不是直接派生于 Document，因此将不会独立存储于自己的集合中，而是和父（超）类保存在同一个集合中。
+        "allow_inheritance": True
+    }
+
+
+class BlogPost(Postm):
+    text = mongo.StringField(required=True)
+
+    @property
+    def type(self):
+        return "blog"
+
+
+class VideoPost(Postm):
+    video_object = mongo.StringField(required=True)
+
+    @property
+    def type(self):
+        return "video"
+
+
+class ImagePost(Postm):
+    image_url = mongo.StringField(required=True)
+
+    @property
+    def type(self):
+        return "image"
+
+
+class QuotePost(Postm):
+    quote = mongo.StringField(required=True)
+    author = mongo.StringField(required=True)
+
+    @property
+    def type(self):
+        return "quote"

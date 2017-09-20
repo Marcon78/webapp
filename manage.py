@@ -4,7 +4,8 @@ from flask_script import Manager, Server
 from flask_script.commands import ShowUrls
 
 from webapp import create_app
-from webapp.models import db, User, Role, Post, Comment, Tag
+from webapp.models import db, User, Role, Post, Comment, Tag, \
+    Userm, Commentm, Postm
 from gen_fake_data import gen_fake_roles, gen_fake_users, gen_fake_tags, gen_fake_posts, gen_fake_comments
 
 env = os.environ.get("WEBAPP_ENV", "dev")
@@ -23,7 +24,8 @@ manager.add_command("db", MigrateCommand)
 @manager.shell
 def make_shell_context():
     return dict(app=app, db=db,
-                User=User, Role=Role, Post=Post, Comment=Comment, Tag=Tag)
+                User=User, Role=Role, Post=Post, Comment=Comment, Tag=Tag,
+                Userm=Userm, Commentm=Commentm, Postm=Postm)
 
 @manager.command
 def gen_fake():

@@ -3,7 +3,7 @@ from flask_login import current_user
 from flask_principal import identity_loaded, UserNeed, RoleNeed
 
 from webapp.config import DevConfig
-from webapp.models import db
+from webapp.models import db, mongo
 from webapp.extensions import bootstrap, bcrypt, lm, principals
 from webapp.controllers.blog import blog_blueprint
 from webapp.controllers.main import main_blueprint
@@ -22,6 +22,7 @@ def create_app(object_name):
     app.config.from_object(object_name)
 
     db.init_app(app)
+    mongo.init_app(app)
     bootstrap.init_app(app)
     bcrypt.init_app(app)
     lm.init_app(app)

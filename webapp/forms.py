@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, \
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SelectField, SubmitField, \
     ValidationError
-from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms.validators import DataRequired, Length, EqualTo, URL
 
 from webapp.models import User
 
@@ -56,4 +56,14 @@ class RegisterForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired(), Length(max=255)])
+    type = SelectField("Post Type",
+                       choices=[
+                           ("blog", "Blog Post"),
+                           ("image", "Image"),
+                           ("video", "Video"),
+                           ("quote", "Quote")
+                       ])
     text = TextAreaField("Content", validators=[DataRequired()])
+    image = StringField("Image URL", validators=[URL(), Length(max=255)])
+    video = StringField("Video Code", validators=[Length(max=255)])
+    author = StringField("Author", validators=[Length(max=255)])
