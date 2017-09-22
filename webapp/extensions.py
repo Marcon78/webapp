@@ -2,12 +2,14 @@ from flask_bootstrap import Bootstrap
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_principal import Principal, Permission, RoleNeed
+from flask_restful import Api
 
 
 bootstrap = Bootstrap()
 bcrypt = Bcrypt()
 lm = LoginManager()
 principals = Principal()
+rest_api = Api()
 
 admin_permission = Permission(RoleNeed("ADMINISTRATOR"))
 poster_permission = Permission(RoleNeed("AUTHOR"))

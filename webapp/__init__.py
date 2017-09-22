@@ -4,10 +4,10 @@ from flask_principal import identity_loaded, UserNeed, RoleNeed
 
 from webapp.config import DevConfig
 from webapp.models import db, mongo
-from webapp.extensions import bootstrap, bcrypt, lm, principals
+from webapp.extensions import bootstrap, bcrypt, lm, principals, rest_api
 from webapp.controllers.blog import blog_blueprint
 from webapp.controllers.main import main_blueprint
-
+from webapp.controllers.rest.post import PostApi
 
 def create_app(object_name):
     """
@@ -27,6 +27,9 @@ def create_app(object_name):
     bcrypt.init_app(app)
     lm.init_app(app)
     principals.init_app(app)
+
+    rest_api.add_resource(PostApi, "/api/post")
+    rest_api.init_app(app)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):

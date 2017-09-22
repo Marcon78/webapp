@@ -63,37 +63,37 @@ def post(post_id):
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        # new_post = Post(form.title.data)
-        # new_post.text = form.text.data
-        # db.session.add(new_post)
-        # db.session.commit()
-        if form.type.data == "blog":
-            new_post = BlogPost()
-            new_post.text = form.text.data
-        elif form.type.data == "image":
-            new_post = ImagePost()
-            new_post.image_url = form.image.data
-        elif form.type.data == "video":
-            new_post = VideoPost()
-            new_post.video_object = form.video.data
-        elif form.type.data == "quote":
-            new_post = QuotePost()
-            new_post.text = form.text.data
-            new_post.author = form.author.data
-
-        new_post.title = form.title.data
+        new_post = Post(form.title.data)
+        new_post.text = form.text.data
+        db.session.add(new_post)
+        db.session.commit()
+        # if form.type.data == "blog":
+        #     new_post = BlogPost()
+        #     new_post.text = form.text.data
+        # elif form.type.data == "image":
+        #     new_post = ImagePost()
+        #     new_post.image_url = form.image.data
+        # elif form.type.data == "video":
+        #     new_post = VideoPost()
+        #     new_post.video_object = form.video.data
+        # elif form.type.data == "quote":
+        #     new_post = QuotePost()
+        #     new_post.text = form.text.data
+        #     new_post.author = form.author.data
+        #
+        # new_post.title = form.title.data
         new_post.user = Userm.objects(username=current_user.username).one()
-        new_post.save(
-            # # 与 SQLAlchemy 不同，MongoEngine 不会在 ReferenceField 中自动保存关联对象。
-            # # 如果要在保存当前文档变更的同时对引用文档的变更也进行保存，则需要将 cascade 设为 True。
-            # cascade=True,
-            # # 插入文档时，会根据类中的参数定义进行类型检查，如果不希望检查，可以将 validate 设为 False。
-            # validate=False,
-            # # 写入级别。
-            # write_concern={"w": 0},             # 不会等待写入，发生错误也不会通知客户端。
-            # write_concern={"w": 1},             # 不会等待写入。缺省行为。
-            # write_concern={"w": 1, "j": True},  # 会等待写入
-        )
+        # new_post.save(
+        #     # # 与 SQLAlchemy 不同，MongoEngine 不会在 ReferenceField 中自动保存关联对象。
+        #     # # 如果要在保存当前文档变更的同时对引用文档的变更也进行保存，则需要将 cascade 设为 True。
+        #     # cascade=True,
+        #     # # 插入文档时，会根据类中的参数定义进行类型检查，如果不希望检查，可以将 validate 设为 False。
+        #     # validate=False,
+        #     # # 写入级别。
+        #     # write_concern={"w": 0},             # 不会等待写入，发生错误也不会通知客户端。
+        #     # write_concern={"w": 1},             # 不会等待写入。缺省行为。
+        #     # write_concern={"w": 1, "j": True},  # 会等待写入
+        # )
 
         return redirect(url_for(".post", post_id=new_post.id))
     return render_template("new.html", form=form)

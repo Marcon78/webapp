@@ -39,7 +39,7 @@
         <div id="image_group" class="form-group">
             {{ form.image.label }}
             {% if form.image.errors %}
-                {% for e in image.errors %}
+                {% for e in form.image.errors %}
                 <p class="help-block">{{ e }}</p>
                 {% endfor %}
             {% endif %}
@@ -72,5 +72,40 @@
 <script src="//cdn.ckeditor.com/4.7.3/full/ckeditor.js"></script>
 <script>
     CKEDITOR.replace("editor");
+
+    $(function(){
+        $("#image_group").hide();
+        $("#video_group").hide();
+        $("#author_group").hide();
+
+        $("#type").on("change", function(){
+            switch ($(this).val()) {
+                case "blog":
+                    $("#text_group").show();
+                    $("#image_group").hide();
+                    $("#video_group").hide();
+                    $("#author_group").hide();
+                    break;
+                case "image":
+                    $("#text_group").hide();
+                    $("#image_group").show();
+                    $("#video_group").hide();
+                    $("#author_group").hide();
+                    break;
+                case "video":
+                    $("#text_group").hide();
+                    $("#image_group").hide();
+                    $("#video_group").show();
+                    $("#author_group").hide();
+                    break;
+                case "quote":
+                    $("#text_group").hide();
+                    $("#image_group").hide();
+                    $("#video_group").hide();
+                    $("#author_group").show();
+                    break;
+            }
+        });
+    })
 </script>
 {% endblock %}
