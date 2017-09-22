@@ -19,6 +19,15 @@
             {{ form.title(class_="form-control") }}
         </div>
         <div class="form-group">
+            {{ form.type.label }}
+            {% if form.type.errors %}
+                {% for e in form.type.errors %}
+                    <p class="help-block">{{ e }}</p>
+                {% endfor %}
+            {% endif %}
+            {{ form.type(class_="form-control") }}
+        </div>
+        <div id="text_group" class="form-group">
             {{ form.text.label }}
             {% if form.text.errors %}
                 {% for e in form.text.errors %}
@@ -26,6 +35,33 @@
                 {% endfor %}
             {% endif %}
             {{ form.text(id="editor", class_="form-control") }}
+        </div>
+        <div id="image_group" class="form-group">
+            {{ form.image.label }}
+            {% if form.image.errors %}
+                {% for e in image.errors %}
+                <p class="help-block">{{ e }}</p>
+                {% endfor %}
+            {% endif %}
+            {{ form.image(class_="form-control")}}
+        </div>
+        <div id="video_group" class="form-group">
+            {{ form.video.label }}
+            {% if form.video.errors %}
+                {% for e in form.video.errors %}
+                <p class="help-block">{{ e }}</p>
+                {% endfor %}
+            {% endif %}
+            {{ form.video(class_="form-control") }}
+        </div>
+        <div id="author_group" class="form-group">
+            {{ form.author.label }}
+            {% if form.author.errors %}
+                {% for e in form.author.errors %}
+                <p class="help-block">{{ e }}</p>
+                {% endfor %}
+            {% endif %}
+            {{ form.author(class_="form-control") }}
         </div>
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>

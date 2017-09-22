@@ -5,6 +5,7 @@ from flask_login import AnonymousUserMixin
 
 from webapp.extensions import bcrypt
 
+
 db = SQLAlchemy()
 mongo = MongoEngine()
 
