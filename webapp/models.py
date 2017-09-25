@@ -1,7 +1,9 @@
 from datetime import datetime
+from flask import current_app
 from flask_mongoengine import MongoEngine
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import AnonymousUserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature
 
 from webapp.extensions import bcrypt
 
@@ -35,7 +37,10 @@ class User(db.Model):
     #     subquery（立即加载，但使用子查询）
     #     noload（永不加载）
     #     dynamic（不加载记录，但提供加载记录的查询）
-    posts = db.relationship("Post", backref="user", lazy="dynamic")
+    # cascade 参数配置在父对象上执行的操作对相关对象的影响。
+    posts = db.relationship("Post", backref="user",
+                            lazy="dynamic",
+                            cascade="all, delete-orphan")
     roles = db.relationship("Role",
                             secondary=roles,
                             backref=db.backref("users", lazy="dynamic"),
@@ -72,6 +77,18 @@ class User(db.Model):
     def get_id(self):
         return str(self.id)
 
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None
+        except BadSignature:
+            return None
+
+        return User.query.get(data["id"])
+
 
 class Role(db.Model):
     __tablename__ = "roles"
@@ -102,7 +119,8 @@ class Post(db.Model):
     tags = db.relationship("Tag",
                            secondary=tags,
                            backref=db.backref("posts", lazy="dynamic"),
-                           lazy="dynamic")
+                           lazy="dynamic",
+                           cascade="all, delete-orphan")
 
     def __init__(self, title):
         self.title = title

@@ -8,6 +8,7 @@ from webapp.extensions import bootstrap, bcrypt, lm, principals, rest_api
 from webapp.controllers.blog import blog_blueprint
 from webapp.controllers.main import main_blueprint
 from webapp.controllers.rest.post import PostApi
+from webapp.controllers.rest.auth import AuthApi
 
 def create_app(object_name):
     """
@@ -28,7 +29,11 @@ def create_app(object_name):
     lm.init_app(app)
     principals.init_app(app)
 
-    rest_api.add_resource(PostApi, "/api/post")
+    rest_api.add_resource(AuthApi,
+                          "/api/auth")
+    rest_api.add_resource(PostApi,
+                          "/api/post",
+                          "/api/post/<int:post_id>")
     rest_api.init_app(app)
 
     @identity_loaded.connect_via(app)
