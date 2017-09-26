@@ -11,11 +11,15 @@ class Config:
 
 
 class ProdConfig(Config):
-    pass
+    CACHE_TYPE = "simple"
 
 
 class DevConfig(Config):
     DEBUG = True
+    # 禁止 Flask Debug Toolbar 拦截 HTTP 302 重定向请求。
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
+    # 禁止 Flask Assets 在开发环境中编译库文件。
+    ASSETS_DEBUG = True
     # 是否记录所有发到标准输出(stderr)的语句。
     SQLALCHEMY_ECHO = False
     # SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
@@ -27,3 +31,11 @@ class DevConfig(Config):
         "host": "192.168.7.150",
         "port": 27017
     }
+
+    # CACHE_TYPE = "null"
+    # CACHE_TYPE = "simple"
+    CACHE_TYPE = "redis"
+    CACHE_REDIS_HOST = "192.168.7.150"
+    CACHE_REDIS_PORT = "6379"
+    CACHE_REDIS_PASSWORD = ""
+    CACHE_REDIS_DB = "0"

@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature
 
-from webapp.extensions import bcrypt
+from webapp.extensions import bcrypt, cache
 
 
 db = SQLAlchemy()
@@ -78,6 +78,7 @@ class User(db.Model):
         return str(self.id)
 
     @staticmethod
+    @cache.memoize(timeout=60)  # memoize 不但会存储函数的运行结果，也会存储调用时的参数。
     def verify_auth_token(token):
         s = Serializer(current_app.config["SECRET_KEY"])
         try:

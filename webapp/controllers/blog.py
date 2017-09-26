@@ -1,14 +1,15 @@
+import locale
 from datetime import datetime
 from os import path
 from sqlalchemy import func
-from flask import Blueprint, render_template, redirect, url_for, abort
+from flask import Blueprint, render_template, redirect, url_for, abort, request
 from flask_login import login_required, current_user
 from flask_principal import Permission, UserNeed
 
 from webapp.models import db, User, Post, Comment, Tag, tags, \
     Userm, BlogPost, QuotePost, VideoPost, ImagePost
 from webapp.forms import CommentForm, PostForm
-from webapp.extensions import poster_permission, admin_permission
+from webapp.extensions import poster_permission, admin_permission, cache
 
 
 blog_blueprint = Blueprint("blog", __name__,
@@ -16,6 +17,19 @@ blog_blueprint = Blueprint("blog", __name__,
                            url_prefix="/blog")
 
 
+# key_prefix 要求是一个字符串，因此这里可以不用使用 encode()。
+def make_cache_key(*args, **kwargs):
+    """Dynamic creation the request url."""
+    path = request.path
+    args = str(hash(frozenset(request.args.items())))
+    # return str((path + args).encode("utf-8"))
+    return path + args
+
+
+# key_prefix 对于非视图函数是必需的，这样 Flask Cache 才会正确地保存函数的返回值。
+# 对于每一个被缓存的函数，这个值应该是唯一的。
+# 这里的 timeout 值很大，因为与视图相比，函数的输出结果可能发生的变动更少。
+@cache.cached(timeout=7200, key_prefix="sidebar_data")
 def sidebar_data():
     recent = Post.query.order_by(Post.publish_date.desc()).limit(5).all()
     # 取 5 个最常用标签。
@@ -28,6 +42,7 @@ def sidebar_data():
 
 @blog_blueprint.route("/")
 @blog_blueprint.route("/<int:page>")
+@cache.cached(timeout=600)  # 缓存 60 秒。
 def home(page=1):
     posts = Post.query.order_by(Post.publish_date.desc()).paginate(page, 10)
     recent, top_tags = sidebar_data()
@@ -37,6 +52,7 @@ def home(page=1):
 
 
 @blog_blueprint.route("/post/<int:post_id>", methods=["GET", "POST"])
+@cache.cached(timeout=600, key_prefix=make_cache_key)
 def post(post_id):
     form = CommentForm()
     if form.validate_on_submit():

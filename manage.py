@@ -1,7 +1,7 @@
 import os
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager, Server
-from flask_script.commands import ShowUrls
+from flask_script.commands import ShowUrls, Clean
 
 from webapp import create_app
 from webapp.models import db, User, Role, Post, Comment, Tag, \
@@ -16,6 +16,8 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command("server", Server(port=8080))
 manager.add_command("show-urls", ShowUrls())
+# 清除工作目录中 Python 编译出来的 .pyc 和 .pyo 文件。
+manager.add_command("clean", Clean())
 manager.add_command("db", MigrateCommand)
 
 
@@ -29,6 +31,8 @@ def make_shell_context():
 
 @manager.command
 def gen_fake():
+    # 创建数据表，如果数据表存在，则忽视。
+    db.create_all()
     gen_fake_roles(db)
     gen_fake_users(db)
     gen_fake_tags(db)

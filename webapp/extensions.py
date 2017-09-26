@@ -3,6 +3,10 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_principal import Principal, Permission, RoleNeed
 from flask_restful import Api
+from flask_debugtoolbar import DebugToolbarExtension
+# http://pythonhosted.org/Flask-Cache/
+from flask_cache import Cache
+from flask_assets import Environment, Bundle
 
 
 bootstrap = Bootstrap()
@@ -10,6 +14,9 @@ bcrypt = Bcrypt()
 lm = LoginManager()
 principals = Principal()
 rest_api = Api()
+debug_toolbar = DebugToolbarExtension()
+cache = Cache()
+assets_env = Environment()
 
 admin_permission = Permission(RoleNeed("ADMINISTRATOR"))
 poster_permission = Permission(RoleNeed("AUTHOR"))
@@ -21,6 +28,20 @@ lm.login_view = "main.login"
 lm.login_message = "Please login to access this page"
 lm.login_message_category = "info"
 lm.session_protection = "strong"
+
+main_css = Bundle(
+    "css/bootstrap.css",
+    filters="cssmin",
+    output="css/common.css"
+)
+
+main_js = Bundle(
+    "js/jquery.js",
+    "js/bootstrap.js",
+    "js/ckeditor.js",
+    filters="jsmin",
+    output="js/common.js"
+)
 
 
 # 接受一个（unicode 类型的）用户 ID，并且返回一个用户对象（或者 None）。
