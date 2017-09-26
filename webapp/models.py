@@ -116,11 +116,11 @@ class Post(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey("users.id"))
     comments = db.relationship("Comment", backref="post", lazy="dynamic")
     # secondary 参数会告知 SQLAlchemy 该关联被保存在该参数指定的表中。
+    # delete-orphan cascade is not supported on a many-to-many or many-to-one relationship when single_parent is not set.
     tags = db.relationship("Tag",
                            secondary=tags,
                            backref=db.backref("posts", lazy="dynamic"),
-                           lazy="dynamic",
-                           cascade="all, delete-orphan")
+                           lazy="dynamic")
 
     def __init__(self, title):
         self.title = title

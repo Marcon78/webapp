@@ -63,7 +63,7 @@ def gen_fake_posts(db):
 def gen_fake_comments(db):
     # insert comments.
     post_count = Post.query.count()
-    for i in range(500):
+    for i in range(200):
         post = Post.query.offset(randint(0, post_count-1)).first()
         if post.comments.count() < 3:
             new_comment = Comment()

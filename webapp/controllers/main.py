@@ -1,14 +1,22 @@
 from os import path
 from flask import Blueprint, render_template, redirect, url_for, flash, current_app
 from flask_login import login_user, logout_user
-from flask_principal import identity_changed, Identity, AnonymousIdentity
+from flask_principal import identity_changed, Identity, IdentityContext, AnonymousIdentity
 
+from webapp.extensions import admin_permission
 from webapp.forms import LoginForm, RegisterForm
 from webapp.models import db, User
 
 
 main_blueprint = Blueprint("main", __name__,
                            template_folder=path.join(path.pardir, "templates", "main"))
+
+
+# 上下文处理,可以在jinja2判断是否有执行权限
+@main_blueprint.app_context_processor
+def context():
+    admin = IdentityContext(admin_permission)
+    return dict(admin=admin)
 
 
 @main_blueprint.route("/")

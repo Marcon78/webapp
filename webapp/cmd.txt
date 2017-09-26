@@ -1,0 +1,4 @@
+http POST 127.0.0.1:8080/api/auth username="Marco" password="dog"
+
+http PUT 127.0.0.1:8080/api/comments token="eyJpYXQiOjE1MDY0MTAxODYsImV4cCI6MTUwNjQxMDc4NiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MX0.f2mkeDA2WuDS-BiKaoU6u7ksLxeuNVkiHUn4CgTc1_0"
+http PUT 127.0.0.1:8080/api/post/1/comments token="eyJpYXQiOjE1MDY0MTAxODYsImV4cCI6MTUwNjQxMDc4NiwiYWxnIjoiSFMyNTYifQ.eyJpZCI6MX0.f2mkeDA2WuDS-BiKaoU6u7ksLxeuNVkiHUn4CgTc1_0"

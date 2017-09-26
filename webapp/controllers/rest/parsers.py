@@ -51,3 +51,9 @@ post_put_parser.add_argument("tags", type=str, action="append")
 post_delete_parser = reqparse.RequestParser()
 post_delete_parser.add_argument("token", type=str, required=True,
                                 help="Auth token is required to delete posts")
+
+
+comment_put_parser = reqparse.RequestParser()
+comment_put_parser.add_argument("token", type=str, required=True,
+                                help="Auth token is required to edit comments")
+comment_put_parser.add_argument("text", type=str)

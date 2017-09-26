@@ -98,10 +98,12 @@ def new_post():
         return redirect(url_for(".post", post_id=new_post.id))
     return render_template("new.html", form=form)
 
-
+# 注意，如果要在 Jinja2 模板中使用 admin，需要 admin_permission 授权。
+# 权限貌似不能够叠加使用。只能在创建的时候，通过 union 创建合并的权限。
 @blog_blueprint.route("/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 @poster_permission.require(http_exception=403)
+# @admin_permission.require(http_exception=403)
 def edit_post(id):
     post = Post.query.get_or_404(id)
     # 用户权限

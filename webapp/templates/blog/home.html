@@ -16,7 +16,7 @@
         <div class="row">
             <div class="col-lg-12">
                 {{ post.text | truncate(255) | safe }}
-                <a href="{{ url_for('.post', post_id=post.id) }}">Read More</a>
+                <a href="{{ url_for('.post', post_id=post.id) }}"><br>Read More</a>
             </div>
         </div>
         {% endfor %}

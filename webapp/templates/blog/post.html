@@ -30,6 +30,7 @@
             </div>
         </div>
         <!--注意，Jinja2脚本必须用 {# ... #} 来注释。-->
+        {# {% if admin.can() %} #}
         {% if current_user == post.user %}
         <div class="row">
             <div class="col-lg-2">

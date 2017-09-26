@@ -9,6 +9,7 @@ from webapp.controllers.blog import blog_blueprint
 from webapp.controllers.main import main_blueprint
 from webapp.controllers.rest.post import PostApi
 from webapp.controllers.rest.auth import AuthApi
+from webapp.controllers.rest.comment import CommentApi
 
 def create_app(object_name):
     """
@@ -34,18 +35,24 @@ def create_app(object_name):
     rest_api.add_resource(PostApi,
                           "/api/post",
                           "/api/post/<int:post_id>")
+    rest_api.add_resource(CommentApi,
+                          "/api/comments",
+                          "/api/post/<int:post_id>/comments")
     rest_api.init_app(app)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):
         # set the user object of identity
+        # 设置当前用户身份为 login 登录对象。
         identity.user = current_user
 
         # add the UserNeed to the identity
+        # 添加 UserNeed 到 identity user 对象。
         if hasattr(current_user, "id"):
             identity.provides.add(UserNeed(current_user.id))
 
         # add each role to the identity
+        # 每个 Role 添加到 identity user 对象，roles 是User的多对多关联。
         if hasattr(current_user, "roles"):
             for role in current_user.roles:
                 identity.provides.add(RoleNeed(role.name))
