@@ -1,0 +1,3 @@
+c:\progra~1\python\envs\py35\lib\site-packages\Flask_YouTube-0.1-py3.5.egg
+C:\PROGRA~1\Python\Envs\py35\Scripts\flask-script.py
+C:\PROGRA~1\Python\Envs\py35\Scripts\flask.exe

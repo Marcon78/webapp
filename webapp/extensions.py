@@ -8,6 +8,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_cache import Cache
 from flask_assets import Environment, Bundle
 
+# from flask_youtube import Youtube
 
 bootstrap = Bootstrap()
 bcrypt = Bcrypt()
@@ -49,3 +50,5 @@ main_js = Bundle(
 def load_user(user_id):
     from webapp.models import User
     return User.query.get(int(user_id))
+
+# youtube_ext = Youtube()

@@ -4,7 +4,11 @@ from flask_principal import identity_loaded, UserNeed, RoleNeed
 
 from webapp.config import DevConfig
 from webapp.models import db, mongo
-from webapp.extensions import bootstrap, bcrypt, lm, principals, rest_api, debug_toolbar, cache, assets_env, main_css, main_js
+from webapp.extensions import (
+    bootstrap, bcrypt, lm, principals, rest_api, debug_toolbar, cache,
+    assets_env, main_css, main_js
+    # youtube_ext
+)
 from webapp.controllers.blog import blog_blueprint
 from webapp.controllers.main import main_blueprint
 from webapp.controllers.rest.post import PostApi
@@ -46,6 +50,8 @@ def create_app(object_name):
     assets_env.init_app(app)
     assets_env.register("main_js", main_js)
     assets_env.register("main_css", main_css)
+
+    # youtube_ext.init_app(app)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):
