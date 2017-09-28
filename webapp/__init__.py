@@ -6,7 +6,7 @@ from webapp.config import DevConfig
 from webapp.models import db, mongo
 from webapp.extensions import (
     bootstrap, bcrypt, lm, principals, rest_api, debug_toolbar, cache,
-    assets_env, main_css, main_js
+    assets_env, main_css, main_js, flask_gzip
     # youtube_ext
 )
 from webapp.controllers.blog import blog_blueprint
@@ -44,7 +44,9 @@ def create_app(object_name):
                           "/api/post/<int:post_id>/comments")
     rest_api.init_app(app)
 
-    debug_toolbar.init_app(app)
+    # 如果使用了自定义的 flask_gzip 压缩 response 数据，那么需要关闭 Flask Debug Toolbar。
+    # 因为它会将所有的响应都当作 UTF-8 文本进行处理。
+    # debug_toolbar.init_app(app)
     cache.init_app(app)
 
     assets_env.init_app(app)
@@ -52,6 +54,7 @@ def create_app(object_name):
     assets_env.register("main_css", main_css)
 
     # youtube_ext.init_app(app)
+    flask_gzip.init_app(app)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):

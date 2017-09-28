@@ -10,6 +10,10 @@ from flask_assets import Environment, Bundle
 
 # from flask_youtube import Youtube
 
+from flask import request
+from gzip import GzipFile
+from io import BytesIO
+
 bootstrap = Bootstrap()
 bcrypt = Bcrypt()
 lm = LoginManager()
@@ -52,3 +56,35 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # youtube_ext = Youtube()
+
+class GZip(object):
+    def __init__(self, app=None):
+        self.app = app
+        if app is not None:
+            self.init_app(app)
+
+    def init_app(self, app):
+        # 为应用的 after_request 事件注册一个函数。用于压缩返回的结果。
+        app.after_request(self.after_request)
+
+    def after_request(self, response):
+        encoding = request.headers.get("Accept-Encoding", "")
+        if "gzip" not in encoding or \
+                not response.status_code in (200, 201):
+            return response
+
+        response.direct_passthrough = False
+
+        # 开始压缩 response 中的数据。
+        gzip_buffer = BytesIO()
+        with GzipFile(mode="wb", compresslevel=5, fileobj=gzip_buffer) as gzip_file:
+            gzip_file.write(response.get_data())
+
+        response.set_data(bytes(gzip_buffer.getvalue()))
+
+        response.headers["Content-Encoding"] = "gzip"
+        response.headers["Content-Length"] = response.content_length
+
+        return response
+
+flask_gzip = GZip()
