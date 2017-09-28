@@ -1,5 +1,5 @@
 from os import path
-from flask import Blueprint, render_template, redirect, url_for, flash, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, current_app, request, abort
 from flask_login import login_user, logout_user
 from flask_principal import identity_changed, Identity, IdentityContext, AnonymousIdentity
 
@@ -40,7 +40,7 @@ def login():
             )
 
             flash("You have been logged in.", category="success")
-            return redirect(url_for(".index"))
+            return redirect(url_for("blog.home"))
     return render_template("login.html", form=form)
 
 
@@ -75,3 +75,15 @@ def register():
 
     return render_template("register.html",
                            form=form)
+
+
+@main_blueprint.route("/shutdown")
+def server_shutdown():
+    # 这里应该有判断逻辑，只有测试环境中才可以通过这个路由关闭 Flask 服务器。
+    # 调用 Werkzeug 在环境中提供的关闭函数。
+    shutdown = request.environ.get("werkzeug.server.shutdown")
+    if not shutdown:
+        abort(500)  # 内部服务器错误
+
+    shutdown()
+    return "Shutting down..."

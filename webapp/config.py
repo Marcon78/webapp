@@ -1,4 +1,5 @@
 import os
+import tempfile
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -10,8 +11,28 @@ class Config:
     SECRET_KEY = "j5@CRnKRfSG9XCcp"
 
 
+class TestConfig(Config):
+    # NamedTemporaryFile 是在文件系统中可以找到的文件。
+    db_file = tempfile.NamedTemporaryFile()
+
+    DEBUG = True
+    # 禁用 Flask Debug Toolbar 工具栏。
+    DEBUG_TB_ENABLED = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
+            "sqlite:///" + os.path.join(os.path.pardir, "data-test.sqlite")
+    # 禁用缓存。
+    CACHE_TYPE = "null"
+    # 禁用表单的 CSRF 保护。
+    WTF_CSRF_ENABLED = False
+
+
 class ProdConfig(Config):
-    CACHE_TYPE = "simple"
+    DEBUG = False
+    CACHE_TYPE = "redis"
+    CACHE_REDIS_HOST = "192.168.7.150"
+    CACHE_REDIS_PORT = "6379"
+    CACHE_REDIS_PASSWORD = ""
+    CACHE_REDIS_DB = "0"
 
 
 class DevConfig(Config):
@@ -32,10 +53,4 @@ class DevConfig(Config):
         "port": 27017
     }
 
-    # CACHE_TYPE = "null"
-    # CACHE_TYPE = "simple"
-    CACHE_TYPE = "redis"
-    CACHE_REDIS_HOST = "192.168.7.150"
-    CACHE_REDIS_PORT = "6379"
-    CACHE_REDIS_PASSWORD = ""
-    CACHE_REDIS_DB = "0"
+    CACHE_TYPE = "simple"
