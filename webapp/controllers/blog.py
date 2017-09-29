@@ -9,7 +9,7 @@ from flask_principal import Permission, UserNeed
 from webapp.models import db, User, Post, Comment, Tag, tags, \
     Userm, BlogPost, QuotePost, VideoPost, ImagePost
 from webapp.forms import CommentForm, PostForm
-from webapp.extensions import poster_permission, admin_permission, cache
+from webapp.extensions import poster_permission, admin_permission#, cache
 
 
 blog_blueprint = Blueprint("blog", __name__,
@@ -29,7 +29,7 @@ def make_cache_key(*args, **kwargs):
 # key_prefix 对于非视图函数是必需的，这样 Flask Cache 才会正确地保存函数的返回值。
 # 对于每一个被缓存的函数，这个值应该是唯一的。
 # 这里的 timeout 值很大，因为与视图相比，函数的输出结果可能发生的变动更少。
-@cache.cached(timeout=7200, key_prefix="sidebar_data")
+# @cache.cached(timeout=7200, key_prefix="sidebar_data")
 def sidebar_data():
     recent = Post.query.order_by(Post.publish_date.desc()).limit(5).all()
     # 取 5 个最常用标签。
@@ -42,7 +42,7 @@ def sidebar_data():
 
 @blog_blueprint.route("/")
 @blog_blueprint.route("/<int:page>")
-@cache.cached(timeout=600)  # 缓存 60 秒。
+# @cache.cached(timeout=600)  # 缓存 60 秒。
 def home(page=1):
     posts = Post.query.order_by(Post.publish_date.desc()).paginate(page, 10)
     recent, top_tags = sidebar_data()
@@ -52,7 +52,7 @@ def home(page=1):
 
 
 @blog_blueprint.route("/post/<int:post_id>", methods=["GET", "POST"])
-@cache.cached(timeout=600, key_prefix=make_cache_key)
+# @cache.cached(timeout=600, key_prefix=make_cache_key)
 def post(post_id):
     form = CommentForm()
     if form.validate_on_submit():

@@ -20,6 +20,7 @@ class TestConfig(Config):
     DEBUG_TB_ENABLED = False
     SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
             "sqlite:///" + os.path.join(os.path.pardir, "data-test.sqlite")
+    # SQLALCHEMY_DATABASE_URI = "sqlite:///" + db_file.name
     # 禁用缓存。
     CACHE_TYPE = "null"
     # 禁用表单的 CSRF 保护。

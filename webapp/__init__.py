@@ -5,15 +5,16 @@ from flask_principal import identity_loaded, UserNeed, RoleNeed
 from webapp.config import DevConfig
 from webapp.models import db, mongo
 from webapp.extensions import (
-    bootstrap, bcrypt, lm, principals, rest_api, debug_toolbar, cache,
+    bootstrap, bcrypt, lm, principals, #rest_api,
+    #debug_toolbar, #cache,
     assets_env, main_css, main_js, flask_gzip
     # youtube_ext
 )
 from webapp.controllers.blog import blog_blueprint
 from webapp.controllers.main import main_blueprint
-from webapp.controllers.rest.post import PostApi
-from webapp.controllers.rest.auth import AuthApi
-from webapp.controllers.rest.comment import CommentApi
+# from webapp.controllers.rest.post import PostApi
+# from webapp.controllers.rest.auth import AuthApi
+# from webapp.controllers.rest.comment import CommentApi
 
 def create_app(object_name):
     """
@@ -34,20 +35,20 @@ def create_app(object_name):
     lm.init_app(app)
     principals.init_app(app)
 
-    rest_api.add_resource(AuthApi,
-                          "/api/auth")
-    rest_api.add_resource(PostApi,
-                          "/api/post",
-                          "/api/post/<int:post_id>")
-    rest_api.add_resource(CommentApi,
-                          "/api/comments",
-                          "/api/post/<int:post_id>/comments")
-    rest_api.init_app(app)
+    # rest_api.add_resource(AuthApi,
+    #                       "/api/auth")
+    # rest_api.add_resource(PostApi,
+    #                       "/api/post",
+    #                       "/api/post/<int:post_id>")
+    # rest_api.add_resource(CommentApi,
+    #                       "/api/comments",
+    #                       "/api/post/<int:post_id>/comments")
+    # rest_api.init_app(app)
 
     # 如果使用了自定义的 flask_gzip 压缩 response 数据，那么需要关闭 Flask Debug Toolbar。
     # 因为它会将所有的响应都当作 UTF-8 文本进行处理。
     # debug_toolbar.init_app(app)
-    cache.init_app(app)
+    # cache.init_app(app)
 
     assets_env.init_app(app)
     assets_env.register("main_js", main_js)
@@ -85,6 +86,6 @@ def create_app(object_name):
 #
 # app.register_blueprint(blog_blueprint)
 
-if __name__ == "__main__":
-    app = create_app("webapp.config.DevConfig")
-    app.run(port=8080)
+# if __name__ == "__main__":
+#     app = create_app("webapp.config.DevConfig")
+#     app.run(port=8080)

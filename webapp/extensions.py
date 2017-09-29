@@ -1,11 +1,18 @@
+# 禁止由于 flask_cache 的 jinja2ext.py 中使用了 flask.ext.cache 而不是 flask_cache，
+# 而造成的 ExtDeprecationWarning。
+import warnings
+from flask.exthook import ExtDeprecationWarning
+
+warnings.simplefilter("ignore", ExtDeprecationWarning)
+
 from flask_bootstrap import Bootstrap
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_principal import Principal, Permission, RoleNeed
-from flask_restful import Api
-from flask_debugtoolbar import DebugToolbarExtension
+# from flask_restful import Api
+# from flask_debugtoolbar import DebugToolbarExtension
 # http://pythonhosted.org/Flask-Cache/
-from flask_cache import Cache
+# from flask_cache import Cache
 from flask_assets import Environment, Bundle
 
 # from flask_youtube import Youtube
@@ -18,9 +25,9 @@ bootstrap = Bootstrap()
 bcrypt = Bcrypt()
 lm = LoginManager()
 principals = Principal()
-rest_api = Api()
-debug_toolbar = DebugToolbarExtension()
-cache = Cache()
+# rest_api = Api()
+# debug_toolbar = DebugToolbarExtension()
+# cache = Cache()
 assets_env = Environment()
 
 admin_permission = Permission(RoleNeed("ADMINISTRATOR"))

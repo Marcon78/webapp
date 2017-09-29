@@ -3,13 +3,13 @@ from unittest import TestCase, main
 
 from webapp import create_app
 from webapp.models import db, User, Role
-from webapp.extensions import rest_api
+# from webapp.extensions import rest_api
 
 class TestURLs(TestCase):
     def setUp(self):
-        # 修复 bug 的方法：
-        # Flask Restful 扩展会为应用生成蓝图对象并在内部保存起来，但是在应用销毁时不会主动将其移除。
-        rest_api.resources = []
+        # # 修复 bug 的方法：
+        # # Flask Restful 扩展会为应用生成蓝图对象并在内部保存起来，但是在应用销毁时不会主动将其移除。
+        # rest_api.resources = []
 
         self.app = create_app("webapp.config.TestConfig")
         self.app_context = self.app.app_context()
@@ -40,13 +40,17 @@ class TestURLs(TestCase):
 
     def test_login(self):
         """测试登录窗体是否正常工作。"""
-        test_role = Role("DEFAULT")
-        db.session.add(test_role)
-        db.session.commit()
+        test_role = Role.query.filter_by(name="DEFAULT").first()
+        if not test_role:
+            test_role = Role("DEFAULT")
+            db.session.add(test_role)
+            db.session.commit()
 
-        test_user = User("test", "test")
-        db.session.add(test_user)
-        db.session.commit()
+        test_user = User.query.filter_by(username="test").first()
+        if not test_user:
+            test_user = User("test", "test")
+            db.session.add(test_user)
+            db.session.commit()
 
         # 参数 follow_redirects=True，让测试客户端和浏览器一样，自动向重定向的 URL 发起 GET 请求。
         result = self.client.post("/login",
@@ -67,5 +71,5 @@ class TestURLs(TestCase):
 # 测试需要在“父”目录而不是测试用例目录中运行，这样可以方便地在测试代码中直接导入应用内的代码。
 # 运行
 # python -m unittest discover
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
